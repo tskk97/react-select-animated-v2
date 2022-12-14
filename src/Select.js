@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component, type ElementRef, type Node } from 'react';
+import { Transition, config, animated } from 'react-spring/renderprops';
 
 import memoizeOne from 'memoize-one';
 import { MenuPlacer } from './components/Menu';
@@ -1633,7 +1634,7 @@ export default class Select extends Component<Props, State> {
       onMenuScrollToBottom,
     } = this.props;
 
-    if (!menuIsOpen) return null;
+    // if (!menuIsOpen) return null;
 
     // TODO: Internal Option Type here
     const render = (props: OptionType) => {
@@ -1694,34 +1695,73 @@ export default class Select extends Component<Props, State> {
     const menuElement = (
       <MenuPlacer {...commonProps} {...menuPlacementProps}>
         {({ ref, placerProps: { placement, maxHeight } }) => (
-          <Menu
-            {...commonProps}
-            {...menuPlacementProps}
-            innerRef={ref}
-            innerProps={{
-              onMouseDown: this.onMenuMouseDown,
-              onMouseMove: this.onMenuMouseMove,
+          <Transition
+            native
+            items={menuIsOpen}
+            from={{
+              opacity: 0,
+              transform: 'perspective(800px) rotateX(-90deg)',
+              transformOrigin: 'top',
             }}
-            isLoading={isLoading}
-            placement={placement}
+            enter={{
+              opacity: 1,
+              transform: 'perspective(800px) rotateX(0deg)',
+              transformOrigin: 'top',
+            }}
+            leave={{
+              opacity: 0,
+              transform: 'perspective(800px) rotateX(-90deg)',
+              transformOrigin: 'top',
+            }}
+            config={config.stiff}
           >
-            <ScrollCaptor
-              isEnabled={captureMenuScroll}
-              onTopArrive={onMenuScrollToTop}
-              onBottomArrive={onMenuScrollToBottom}
-            >
-              <ScrollBlock isEnabled={menuShouldBlockScroll}>
-                <MenuList
-                  {...commonProps}
-                  innerRef={this.getMenuListRef}
-                  isLoading={isLoading}
-                  maxHeight={maxHeight}
+            {(menuIsOpen) =>
+              menuIsOpen &&
+              ((props) => (
+                <animated.div
+                  className="menu-wrapper"
+                  style={{
+                    ...props,
+                    position: 'absolute',
+                    top: '100%',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    backgroundColor: 'hsl(0,0%,100%)',
+                    zIndex: '1',
+                  }}
                 >
-                  {menuUI}
-                </MenuList>
-              </ScrollBlock>
-            </ScrollCaptor>
-          </Menu>
+                  <Menu
+                    {...commonProps}
+                    {...menuPlacementProps}
+                    innerRef={ref}
+                    innerProps={{
+                      onMouseDown: this.onMenuMouseDown,
+                      onMouseMove: this.onMenuMouseMove,
+                    }}
+                    isLoading={isLoading}
+                    placement={placement}
+                  >
+                    <ScrollCaptor
+                      isEnabled={captureMenuScroll}
+                      onTopArrive={onMenuScrollToTop}
+                      onBottomArrive={onMenuScrollToBottom}
+                    >
+                      <ScrollBlock isEnabled={menuShouldBlockScroll}>
+                        <MenuList
+                          {...commonProps}
+                          innerRef={this.getMenuListRef}
+                          isLoading={isLoading}
+                          maxHeight={maxHeight}
+                        >
+                          {menuUI}
+                        </MenuList>
+                      </ScrollBlock>
+                    </ScrollCaptor>
+                  </Menu>
+                </animated.div>
+              ))
+            }
+          </Transition>
         )}
       </MenuPlacer>
     );
