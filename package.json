@@ -1,6 +1,6 @@
 {
   "name": "react-select-animated-v2",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "description": "A Select control built with and for ReactJS - With animations. Forked from https://github.com/JedWatson/react-select/tree/v2.4.4",
   "main": "lib/index.js",
   "module": "dist/react-select.esm.js",

@@ -15,6 +15,7 @@ const globals = {
   'react-dom': 'ReactDOM',
   'react-input-autosize': 'AutosizeInput',
   react: 'React',
+  'react-spring/renderprops': 'Transition',
 };
 // $FlowFixMe This should be inferred by Flow and manual casting does not work inside of this config.
 const external = Object.keys(globals);
